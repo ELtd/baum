@@ -130,15 +130,17 @@ trait NestedSet
             $node->destroyDescendants();
         });
 
-        if (static::softDeletesEnabled()) {
-            static::restoring(function ($node): void {
-                $node->shiftSiblingsForRestore();
-            });
+        static::whenBooted(function () {
+            if (static::softDeletesEnabled()) {
+                static::restoring(function ($node): void {
+                    $node->shiftSiblingsForRestore();
+                });
 
-            static::restored(function ($node): void {
-                $node->restoreDescendants();
-            });
-        }
+                static::restored(function ($node): void {
+                    $node->restoreDescendants();
+                });
+            }
+        });
     }
 
     /**
